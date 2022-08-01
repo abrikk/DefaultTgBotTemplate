@@ -7,8 +7,9 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram_dialog import DialogRegistry
 
 from setup import register_all_dialogs, register_all_handlers
-from tgbot.config import load_config
+from tgbot.config import load_config, Config
 from tgbot.filters.admin import AdminFilter
+from tgbot.middlewares.config import ConfigMiddleware
 from tgbot.middlewares.db import DbSessionMiddleware
 from tgbot.middlewares.user import UserDB
 from tgbot.misc.notify_admins import on_startup_notify
@@ -18,8 +19,9 @@ from tgbot.services.database import create_db_session
 logger = logging.getLogger(__name__)
 
 
-def register_all_middlewares(dp, sessionmaker):
+def register_all_middlewares(dp, sessionmaker, config: Config):
     dp.setup_middleware(DbSessionMiddleware(sessionmaker))
+    dp.setup_middleware(ConfigMiddleware(config))
     dp.setup_middleware(UserDB())
 
 
@@ -45,12 +47,10 @@ async def main():
     sessionmaker = await create_db_session(config)
     registry = DialogRegistry(dp)
 
-    bot['config'] = config
-
-    await on_startup_notify(bot)
+    await on_startup_notify(bot, config)
     await set_default_commands(bot)
 
-    register_all_middlewares(dp, sessionmaker)
+    register_all_middlewares(dp, sessionmaker, config)
     register_all_filters(dp)
     register_all_dialogs(registry)
     register_all_handlers(dp)
