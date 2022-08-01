@@ -4,9 +4,10 @@ from aiogram import Bot
 from aiogram.types import BotCommand, BotCommandScopeDefault, BotCommandScopeChat
 from aiogram.utils.exceptions import ChatNotFound, BotBlocked
 
+from tgbot.config import Config
 
-async def set_default_commands(bot: Bot):
-    config = bot.get('config')
+
+async def set_default_commands(bot: Bot, config: Config):
     usercommands = [
         BotCommand(command="start", description="Start bot"),
         BotCommand(command="help", description="Help")

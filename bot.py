@@ -48,7 +48,7 @@ async def main():
     registry = DialogRegistry(dp)
 
     await on_startup_notify(bot, config)
-    await set_default_commands(bot)
+    await set_default_commands(bot, config)
 
     register_all_middlewares(dp, sessionmaker, config)
     register_all_filters(dp)
